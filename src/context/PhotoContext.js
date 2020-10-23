@@ -14,12 +14,12 @@ const PhotoContextProvider = props => {
   const [loading, setLoading] = useState(true);
 
   const getImageGeoLocation = (imageId) => {
-    axios
+    return axios
       .get(
-        `https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=${apiKey}&photo_id=${imageId}&format=json`
+        `https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=${apiKey}&photo_id=${imageId}&format=json&nojsoncallback=1`
       )
       .then(response => {
-        console.log(response)
+        return response.data?.photo?.location
       })
       .catch(error => {
         console.log(
@@ -31,14 +31,29 @@ const PhotoContextProvider = props => {
 
 
   const getImagesFromAPI = (query) => {
+    const setGeoInfoToImages =(imagesWithoutGeoInfo) => {
+      let imagesWithGeoInfo = []
+
+      for (const imageToAddGeoInfo of imagesWithoutGeoInfo) {
+        getImageGeoLocation(imageToAddGeoInfo.id)
+        .then((response) => imageToAddGeoInfo.location = response)
+        debugger
+        imagesWithGeoInfo.push(imageToAddGeoInfo)
+      }
+
+      return imagesWithGeoInfo
+    }
+
     axios
       .get(
         `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&has_geo=1&per_page=24&format=json&nojsoncallback=1`
       )
       .then(response => {
-        getImageGeoLocation(response.data.photos.photo[0].id)
-        setImages(response.data.photos.photo);
-        updateCachedImagesMap(query.toLowerCase(), response.data.photos.photo)
+        let loadedImages = response.data.photos.photo
+        loadedImages = setGeoInfoToImages(loadedImages)
+        setImages(loadedImages);
+        console.log(loadedImages)
+        updateCachedImagesMap(query.toLowerCase(), loadedImages)
         setLoading(false);
       })
       .catch(error => {
@@ -51,7 +66,6 @@ const PhotoContextProvider = props => {
 
 
   const runSearch = query => {
-    debugger
     let alreadyCachedImages = cachedImages.get(query.toLowerCase())
     if (alreadyCachedImages) {
       setImages(alreadyCachedImages);
