@@ -1,12 +1,14 @@
 import React, { createContext, useState } from "react";
 import axios from "axios";
 import { apiKey } from "../api/config";
+
+
 export const PhotoContext = createContext();
 
 const PhotoContextProvider = props => {
   const [cachedImages, setCachedImages] = useState(new Map())
-  const updateCachedImagesMap = (query,images) => {
-    setCachedImages(new Map(cachedImages.set(query.toLowerCase(),images)));
+  const updateCachedImagesMap = (query, images) => {
+    setCachedImages(new Map(cachedImages.set(query.toLowerCase(), images)));
   }
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,14 +49,14 @@ const PhotoContextProvider = props => {
       });
   }
 
-  
+
   const runSearch = query => {
     debugger
-    let alreadyCachedImages =  cachedImages.get(query.toLowerCase())
-    if(alreadyCachedImages) {
+    let alreadyCachedImages = cachedImages.get(query.toLowerCase())
+    if (alreadyCachedImages) {
       setImages(alreadyCachedImages);
       setLoading(false);
-    }else {
+    } else {
       getImagesFromAPI(query)
     }
   };
