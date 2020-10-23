@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useRouteMatch } from 'react-router-dom'
 
 const Form = ({ handleSubmit, history }) => {
   const [searchEntry, setSearchEntry] = useState("");
@@ -6,6 +7,20 @@ const Form = ({ handleSubmit, history }) => {
   const updateSearchInput = e => {
     setSearchEntry(e.target.value);
   };
+
+  let location = useLocation()
+  let isInSearchPage = useRouteMatch("/search/:searchInput")
+
+
+  useEffect(
+    () => {
+      if (!isInSearchPage) {
+        setSearchEntry('')
+      }
+    },
+    [location]
+  )
+
   return (
     <form
       className="search-form"
