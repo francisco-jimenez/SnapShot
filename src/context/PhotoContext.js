@@ -32,16 +32,21 @@ const PhotoContextProvider = props => {
 
   const getImagesFromAPI = (query) => {
     const setGeoInfoToImages =(imagesWithoutGeoInfo) => {
+
       let imagesWithGeoInfo = []
 
       for (const imageToAddGeoInfo of imagesWithoutGeoInfo) {
         getImageGeoLocation(imageToAddGeoInfo.id)
-        .then((response) => imageToAddGeoInfo.location = response)
-        debugger
-        imagesWithGeoInfo.push(imageToAddGeoInfo)
+        .then((response) => {
+          imageToAddGeoInfo.location = response
+          imagesWithGeoInfo.push(imageToAddGeoInfo)
+          if (imagesWithoutGeoInfo.lenght === imagesWithGeoInfo.lenght) {
+            setImages(imagesWithGeoInfo);
+            updateCachedImagesMap(query.toLowerCase(), imagesWithGeoInfo)
+            setLoading(false);
+          }
+        })
       }
-
-      return imagesWithGeoInfo
     }
 
     axios
@@ -50,11 +55,7 @@ const PhotoContextProvider = props => {
       )
       .then(response => {
         let loadedImages = response.data.photos.photo
-        loadedImages = setGeoInfoToImages(loadedImages)
-        setImages(loadedImages);
-        console.log(loadedImages)
-        updateCachedImagesMap(query.toLowerCase(), loadedImages)
-        setLoading(false);
+        setGeoInfoToImages(loadedImages)
       })
       .catch(error => {
         console.log(

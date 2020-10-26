@@ -13,8 +13,7 @@ const GeoInfoModal = ({open, onClose, image}) => {
             <Modal.Content image>
                 <Image size='medium' src={image.url} wrapped style ={{margin:'auto'}}/>
                 <Modal.Description>
-                {console.log(image.location?.country?._content)}
-                    <Header>Location: {image.location?.locality?._content} - {image.location?.region?._content +' (' + image.location?.country?._content + ')'}</Header>
+                <Header as ='h4'>{image.location?.locality?._content} - {image.location?.region?._content +' (' + image.location?.country?._content + ')'}</Header>
                     <iframe 
                         src={"https://maps.google.com/maps?q="+image.location.latitude+","+image.location.longitude+"&z=15&output=embed"}
                         width="360" 
