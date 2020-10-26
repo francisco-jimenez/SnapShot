@@ -23,9 +23,7 @@ const Gallery = props => {
       image.url = url
 
       return (
-        <>
             <Image url={url} location ={image.location}  key={id} id={id} alt={title} onClickImage={() => handleImageClick(image)} />
-        </>
       );
     });
   } else {
