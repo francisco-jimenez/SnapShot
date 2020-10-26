@@ -21,9 +21,7 @@ const Gallery = props => {
       let title = image.title;
       let url = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}_m.jpg`;
       image.url = url
-      {console.log(image)}
-      debugger
-      {console.log(image.location)}
+
       return (
         <>
             <Image url={url} location ={image.location}  key={id} id={id} alt={title} onClickImage={() => handleImageClick(image)} />

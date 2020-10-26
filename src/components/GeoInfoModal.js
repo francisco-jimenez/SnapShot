@@ -3,7 +3,6 @@ import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import React from "react";
 
 const GeoInfoModal = ({open, onClose, image}) => {
-    console.log(image)
     return (
         <Modal
             onClose={onClose}
