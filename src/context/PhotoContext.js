@@ -1,19 +1,61 @@
 import React, { createContext, useState } from "react";
 import axios from "axios";
 import { apiKey } from "../api/config";
+
+
 export const PhotoContext = createContext();
 
 const PhotoContextProvider = props => {
+  const [cachedImages, setCachedImages] = useState(new Map())
+  const updateCachedImagesMap = (query, images) => {
+    setCachedImages(new Map(cachedImages.set(query.toLowerCase(), images)));
+  }
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const runSearch = query => {
-    axios
+
+  const getImageGeoLocation = (imageId) => {
+    return axios
       .get(
-        `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=1`
+        `https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=${apiKey}&photo_id=${imageId}&format=json&nojsoncallback=1`
       )
       .then(response => {
-        setImages(response.data.photos.photo);
-        setLoading(false);
+        return response.data?.photo?.location
+      })
+      .catch(error => {
+        console.log(
+          "Encountered an error with fetching photo geo location",
+          error
+        );
+      });
+  }
+
+
+  const getImagesFromAPI = (query) => {
+    const setGeoInfoToImages =(imagesWithoutGeoInfo) => {
+
+      let imagesWithGeoInfo = []
+
+      for (const imageToAddGeoInfo of imagesWithoutGeoInfo) {
+        getImageGeoLocation(imageToAddGeoInfo.id)
+        .then((response) => {
+          imageToAddGeoInfo.location = response
+          imagesWithGeoInfo.push(imageToAddGeoInfo)
+          if (imagesWithoutGeoInfo.lenght === imagesWithGeoInfo.lenght) {
+            setImages(imagesWithGeoInfo);
+            updateCachedImagesMap(query.toLowerCase(), imagesWithGeoInfo)
+            setLoading(false);
+          }
+        })
+      }
+    }
+
+    axios
+      .get(
+        `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&has_geo=1&per_page=24&format=json&nojsoncallback=1`
+      )
+      .then(response => {
+        let loadedImages = response.data.photos.photo
+        setGeoInfoToImages(loadedImages)
       })
       .catch(error => {
         console.log(
@@ -21,6 +63,17 @@ const PhotoContextProvider = props => {
           error
         );
       });
+  }
+
+
+  const runSearch = query => {
+    let alreadyCachedImages = cachedImages.get(query.toLowerCase())
+    if (alreadyCachedImages) {
+      setImages(alreadyCachedImages);
+      setLoading(false);
+    } else {
+      getImagesFromAPI(query)
+    }
   };
   return (
     <PhotoContext.Provider value={{ images, loading, runSearch }}>
