@@ -35,6 +35,7 @@ const Form = ({ handleSubmit, history }) => {
       />
       <button
         type="submit"
+        id= 'searchButton'
         className={`search-button ${searchEntry.trim() ? "active" : null}`}
         disabled={!searchEntry.trim()}
       >

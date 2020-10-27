@@ -24,6 +24,7 @@ const GeoInfoModal = ({ open, onClose, image }) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button
+                    id ='closeModalButton'
                     content="Close"
                     labelPosition='right'
                     onClick={onClose}

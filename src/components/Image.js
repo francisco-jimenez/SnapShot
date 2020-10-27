@@ -7,7 +7,7 @@ const Image = ({ url, location, title, onClickImage }) => (
     <Popup 
       content={<Header as ='h4'>{location?.locality?._content} - {location?.region?._content +' (' + location?.country?._content + ')'}</Header>}
       position='top center'
-      trigger={<li ><img src={url} alt={title} onClick ={() => onClickImage()} /></li>} 
+      trigger={<li ><img clasName ='loadedImage' src={url} alt={title} onClick ={() => onClickImage()} /></li>} 
     />
   </>
   
